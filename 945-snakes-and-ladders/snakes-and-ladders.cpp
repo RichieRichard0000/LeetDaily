@@ -5,46 +5,53 @@ public:
 
         reverse(board.begin(), board.end());
 
-        for(int i = 1; i < n; i++){
-            if(i % 2 == 1)
-                reverse(board[i].begin(), board[i].end());
-        }
+        for(int i = 1; i < n; i += 2)
+            reverse(board[i].begin(), board[i].end());
 
-        unordered_map<int,int> ump;
+        unordered_map<int,int> mp;
         int cnt = 1;
 
-        for(int i = 0; i < n; i++){
-            for(int j = 0; j < n; j++){
-                ump[cnt++] = board[i][j];
-            }
-        }
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+                mp[cnt++] = board[i][j];
 
-        vector<int> reach(n*n + 1, 1e9);
         queue<int> q;
+        vector<bool> vis(n * n + 1, false);
 
         q.push(1);
-        reach[1] = 0;
+        vis[1] = true;
 
-        while(!q.empty()){
-            int num = q.front();
-            q.pop();
+        int moves = 0;
 
-            for(int i = 1; i <= 6; i++){
-                int next = num + i;
+        while(!q.empty()) {
+            int sz = q.size();
 
-                if(next > n*n) break;
+            while(sz--) {
+                int curr = q.front();
+                q.pop();
 
-                if(ump[next] != -1)
-                    next = ump[next];
+                if(curr == n * n)
+                    return moves;
 
-                if(reach[next] > reach[num] + 1){
-                    reach[next] = reach[num] + 1;
-                    q.push(next);
+                for(int dice = 1; dice <= 6; dice++) {
+                    int next = curr + dice;
+
+                    if(next > n * n)
+                        break;
+
+                    if(mp[next] != -1)
+                        next = mp[next];
+
+                    if(!vis[next]) {
+                        vis[next] = true;
+                        q.push(next);
+                    }
                 }
             }
+
+            moves++;
         }
 
-        if(reach[n*n] == 1e9) return -1;
-        return reach[n*n];
+        return -1;
     }
 };
